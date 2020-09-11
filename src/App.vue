@@ -1,28 +1,51 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <div id="sudoku-app" class="main-wrapper">
+      <h1>Sudoku Game</h1>
+      <p>Welcome to the game.</p>
+
+      <button
+        @click="shuffle"
+        class="button"
+      >
+        Create a New Game
+      </button>
+      <transition-group name="cell" tag="div" class="container">
+        <div v-for="cell in cells" :key="cell.id" class="cell">
+          {{ cell.number }}
+        </div>
+      </transition-group>
+    </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import * as _ from 'lodash'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  name: 'Sudoku Game',
+  data() {
+    return {
+      cells: Array.apply(null, { length: 81 }).map(function(_, index) {
+        return {
+          id: index,
+          number: (index % 9) + 1
+        };
+      })
+    };
+  },
+  mounted() {
+    this.shuffle()
+  },
+  methods: {
+    shuffle() {
+      this.cells = _.shuffle(this.cells);
+    }
   }
 }
 </script>
 
 <style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  @import "./less/global.less";
+  @import "./less/cell.less";
+  @import "./less/button.less";
+  @import "./less/variables.less";
 </style>

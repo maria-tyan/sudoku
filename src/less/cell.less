@@ -1,0 +1,20 @@
+.cell {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid white;
+  margin-right: -1px;
+  margin-bottom: -1px;
+
+  &:nth-child(3n) {
+    margin-right: 0;
+  }
+  &:nth-child(27n) {
+    margin-bottom: 0;
+  }
+  &-move {
+    transition: transform 1s;
+  }
+}
