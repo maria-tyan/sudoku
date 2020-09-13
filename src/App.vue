@@ -39,7 +39,7 @@ export default {
     init() {
       return Array.apply(null, { length: 81 }).map((_, index) => ({
           id: index,
-          number: ((index % 9) + parseInt((index / 9), 10) * 3) % 9 + 1,
+          number: ((index % 9) + parseInt((index / 9), 10) * 3 + parseInt((index / 9 / 3), 10)) % 9 + 1,
         }))
     },
     // make a two-dimentional array
