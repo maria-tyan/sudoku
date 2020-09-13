@@ -4,7 +4,7 @@
       <p>Welcome to the game.</p>
 
       <button
-        @click="shuffle"
+        @click="mixArray(cells, 20)"
         class="button"
       >
         Create a New Game
@@ -14,14 +14,6 @@
           {{ cell.number }}
         </div>
       </transition-group>
-
-      <transition-group name="cell" tag="div" class="container">
-        <div v-for="cell in swapColumns(cells).flat(2)" :key="cell.id" class="cell">
-          {{ cell.number }}
-        </div>
-      </transition-group>
-
-      {{ cells }}
     </div>
 </template>
 
@@ -66,7 +58,6 @@ export default {
       while (firstRowNum === secondRowNum) {
         secondRowNum = parseInt(Math.random() * 3)
       }
-      console.log(areaNum * 3 + firstRowNum, areaNum * 3 + secondRowNum)
       const temp = array[areaNum * 3 + firstRowNum] 
       array[areaNum * 3 + firstRowNum] = array[areaNum * 3 + secondRowNum] 
       array[areaNum * 3 + secondRowNum] = temp
@@ -75,6 +66,33 @@ export default {
     // swap two columns for an array in the same area
     swapColumns(array) {
       return this.transpose(this.swapRows(array))
+    },
+    // swap two areas by rows
+    swapRowsArea(array) {
+      const firstAreaNum = parseInt(Math.random() * 3)
+      let secondAreaNum = parseInt(Math.random() * 3)
+      while (firstAreaNum === secondAreaNum) {
+        secondAreaNum = parseInt(Math.random() * 3)
+      }
+      for (let i = 0; i < 3; i++) {
+        const temp = array[firstAreaNum * 3 + i] 
+        array[firstAreaNum * 3 + i] = array[secondAreaNum * 3 + i] 
+        array[secondAreaNum * 3 + i] = temp
+      }
+      return array
+    },
+    // swap two areas by rows
+    swapColumnsArea(array) {
+      return this.transpose(this.swapRowsArea(array))
+    },
+    // create random sudoku field using diffrent methods
+    mixArray(array, n) {
+      const arrayOfMethods = [this.transpose, this.swapRows, this.swapColumns, this.swapRowsArea, this.swapColumnsArea]
+      const length = arrayOfMethods.length
+      for (let i = 0; i < n; i++) {
+        array = arrayOfMethods[parseInt(Math.random() * length)](array)
+      }
+      this.cells = array
     }
   }
 }
