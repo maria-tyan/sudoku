@@ -4,14 +4,19 @@
       <p>Welcome to the game.</p>
 
       <button
-        @click="mixArray(cells, 20)"
+        @click="hideCells()"
         class="button"
       >
         Create a New Game
       </button>
       <transition-group name="cell" tag="div" class="container">
         <div v-for="cell in cells.flat()" :key="cell.id" class="cell">
-          {{ cell.number }}
+          <template v-if="cell.hiden">
+            <input type="number" class="cell-input" />
+          </template>
+          <template v-else>
+            {{ cell.number }}
+          </template>
         </div>
       </transition-group>
     </div>
@@ -24,7 +29,7 @@ export default {
   name: 'SudokuGame',
   data() {
     return {
-      hints: 42,
+      hints: 25,
       cells: this.chunk(this.init()),
     };
   },
@@ -87,13 +92,23 @@ export default {
     },
     // create random sudoku field using diffrent methods
     mixArray(array, n) {
+      // n it's number of shuffles in the array to get a random game
       const arrayOfMethods = [this.transpose, this.swapRows, this.swapColumns, this.swapRowsArea, this.swapColumnsArea]
       const length = arrayOfMethods.length
       for (let i = 0; i < n; i++) {
         array = arrayOfMethods[parseInt(Math.random() * length)](array)
       }
       this.cells = array
-    }
+    },
+    hideCells() {
+      this.mixArray(this.cells, 20)
+      const numberOfHiddenCells = 81 - this.hints
+      while (this.cells.flat().filter((cell) => cell.hiden === true).length < numberOfHiddenCells) {
+        const randomCellRow = parseInt(Math.random() * 9)
+        const randomCellColumn = parseInt(Math.random() * 9) 
+        this.cells[randomCellRow][randomCellColumn].hiden = true
+      }
+    },
   }
 }
 </script>
