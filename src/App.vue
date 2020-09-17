@@ -1,32 +1,39 @@
 <template>
   <div id="sudoku-app" class="main-wrapper">
-      <h1>Sudoku Game</h1>
-      <p>Welcome to the game.</p>
+    <header>
+      <settings-component />
+    </header>
+    <h1>Sudoku Game</h1>
+    <p>Welcome to the game.</p>
 
-      <button
-        @click="hideCells()"
-        class="button"
-      >
-        Create a New Game
-      </button>
-      <transition-group name="cell" tag="div" class="container">
-        <div v-for="cell in cells.flat()" :key="cell.id" class="cell">
-          <template v-if="cell.hiden">
-            <input type="number" class="cell-input" />
-          </template>
-          <template v-else>
-            {{ cell.number }}
-          </template>
-        </div>
-      </transition-group>
-    </div>
+    <button
+      @click="hideCells()"
+      class="button"
+    >
+      Create a New Game
+    </button>
+    <transition-group name="cell" tag="div" class="container">
+      <div v-for="cell in cells.flat()" :key="cell.id" class="cell">
+        <template v-if="cell.hiden">
+          <input type="number" class="cell-input" />
+        </template>
+        <template v-else>
+          {{ cell.number }}
+        </template>
+      </div>
+    </transition-group>
+  </div>
 </template>
 
 <script>
 import * as _ from 'lodash'
+import SettingsComponent from './components/Settings.vue'
 
 export default {
   name: 'SudokuGame',
+  components: {
+    SettingsComponent,
+  },
   data() {
     return {
       hints: 25,
@@ -34,7 +41,7 @@ export default {
     };
   },
   mounted() {
-    this.chunk()
+    this.hideCells()
   },
   methods: {
     shuffle() {
@@ -117,5 +124,4 @@ export default {
   @import "./less/global.less";
   @import "./less/cell.less";
   @import "./less/button.less";
-  @import "./less/variables.less";
 </style>
