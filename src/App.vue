@@ -4,18 +4,23 @@
       <settings-component />
     </header>
     <h1>Sudoku Game</h1>
-    <p>Welcome to the game.</p>
+    <template v-if="checkResults">
+      <p>Congratulations, you've WON!</p>
+    </template>
+    <template v-else>
+      <p>Welcome to the game.</p>
+    </template>
 
     <button
-      @click="hideCells()"
+      @click="init()"
       class="button"
     >
       Create a New Game
     </button>
     <transition-group name="cell" tag="div" class="container">
-      <div v-for="cell in cells.flat()" :key="cell.id" class="cell">
-        <template v-if="cell.hiden">
-          <input type="number" class="cell-input" />
+      <div v-for="(cell, index) in cells.flat()" :key="cell.id" class="cell">
+        <template v-if="cell.hidden">
+          <input v-model="cells[parseInt((index / 9), 10)][index % 9].userNumber" type="number" class="cell-input" />
         </template>
         <template v-else>
           {{ cell.number }}
@@ -36,27 +41,46 @@ export default {
   },
   data() {
     return {
-      hints: 25,
-      cells: this.chunk(this.init()),
+      hints: 79,
+      cells: this.init(),
     };
   },
+  computed: {
+    checkResults() {
+      const sum = (a, b) => a + b;
+      for (let i = 0; i < 9; i++) {
+        const row = this.getRow(this.cells, i)
+        let set = new Set(row)
+        if (set.size !== 9 || row.reduce(sum) !== 45) {
+          return false
+        }
+
+        const column = this.getColumn(this.cells, i)
+        set = new Set(column)
+        if (set.size !== 9 || column.reduce(sum) !== 45) {
+          return false
+        }
+      }
+      return true
+    },
+  },
   mounted() {
-    this.hideCells()
+    this.cell = this.init()
   },
   methods: {
-    shuffle() {
-      this.cells = _.shuffle(this.cells);
-    },
-    // generate the base array
+    // generate the base array, mix it and hide cells
     init() {
-      return Array.apply(null, { length: 81 }).map((_, index) => ({
+      let array =  Array.apply(null, { length: 81 }).map((_, index) => ({
           id: index,
+          hidden: false,
           number: ((index % 9) + parseInt((index / 9), 10) * 3 + parseInt((index / 9 / 3), 10)) % 9 + 1,
         }))
+      this.cells = array = this.hideCells(this.chunk(array, 9))
+      return array
     },
     // make a two-dimentional array
-    chunk(array) {
-      return _.chunk(array, 9)
+    chunk(array, n) {
+      return _.chunk(array, n)
     },
     // transpose an array
     transpose(array) {
@@ -105,16 +129,46 @@ export default {
       for (let i = 0; i < n; i++) {
         array = arrayOfMethods[parseInt(Math.random() * length)](array)
       }
-      this.cells = array
+      
+      return array
     },
-    hideCells() {
-      this.mixArray(this.cells, 20)
+    hideCells(array) {
+      array = this.mixArray(array, 20)
       const numberOfHiddenCells = 81 - this.hints
-      while (this.cells.flat().filter((cell) => cell.hiden === true).length < numberOfHiddenCells) {
+      while (array.flat().filter((cell) => cell.hidden === true).length < numberOfHiddenCells) {
         const randomCellRow = parseInt(Math.random() * 9)
         const randomCellColumn = parseInt(Math.random() * 9) 
-        this.cells[randomCellRow][randomCellColumn].hiden = true
+        array[randomCellRow][randomCellColumn].hidden = true
       }
+
+      return array
+    },
+    getRow(array, n) {
+      const row = []
+      for (let i = 0; i < 9; i++) {
+        if (!array[n][i].hidden) {
+          row.push(array[n][i].number)
+        }
+        if (array[n][i].userNumber) {
+          row.push(parseInt(array[n][i].userNumber))
+        }
+      }
+      return row
+    },
+    getColumn(array, n) {
+      const column = []
+      for (let i = 0; i < 9; i++) {
+        if (!array[i][n].hidden) {
+          column.push(array[i][n].number)
+        }
+        if (array[i][n].userNumber) {
+          column.push(parseInt(array[i][n].userNumber))
+        }
+      }
+      return column
+    },
+    getChunk(array, n) {
+      return this.chunk(array, n)
     },
   }
 }
