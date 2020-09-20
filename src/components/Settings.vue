@@ -18,6 +18,12 @@
         >
           Show a Hint
         </button>
+        <button
+          @click="clearUserInput()"
+          class="button"
+        >
+          Clear My Input
+        </button>
         <select-component />
       </div>
     </transition>
@@ -45,8 +51,10 @@ export default {
       this.$root.$emit('new-game')
     },
     showHint() {
-      console.log('show-hint1')
       this.$root.$emit('show-hint')
+    },
+    clearUserInput() {
+      this.$root.$emit('clear-user-input')
     },
   }
 }

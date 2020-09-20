@@ -62,6 +62,7 @@ export default {
   methods: {
     selectOption(index) {
       this.selectedOption = index
+      this.$root.$emit('select-difficulty', index)
     },
   }
 }

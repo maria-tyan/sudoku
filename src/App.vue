@@ -20,7 +20,12 @@
     <transition-group name="cell" tag="div" class="container">
       <div v-for="(cell, index) in cells.flat()" :key="cell.id" class="cell">
         <template v-if="cell.hidden">
-          <input v-model="cells[parseInt((index / 9), 10)][index % 9].userNumber" type="number" class="cell-input" />
+          <input
+            v-model.number="cells[parseInt((index / 9), 10)][index % 9].userNumber"
+            type="text"
+            class="cell-input"
+            @keypress="onlyNumber"
+          />
         </template>
         <template v-else>
           {{ cell.number }}
@@ -41,8 +46,10 @@ export default {
   },
   data() {
     return {
-      hints: 79,
+      hints: parseInt(Math.random() * 5) + 35,
       cells: this.init(),
+      difficultyLvls: [[35, 40], [30, 35], [25, 30], [20, 25]],
+      difficulty: 0,
     };
   },
   computed: {
@@ -70,8 +77,20 @@ export default {
       this.cells = this.init()
     })
     this.$root.$on('show-hint', () => {
-      console.log('show-hint2')
       this.cells = this.showHint(this.cells)
+    })
+    this.$root.$on('select-difficulty', (lvl) => {
+      this.difficulty = lvl
+      this.hints = parseInt(Math.random() * 5) + 20 + ((4 - this.difficulty) * 5)
+    })
+    this.$root.$on('clear-user-input', () => {
+      const array = this.cells = this.cells.flat().map((cell) => {
+        if (cell.userNumber) {
+          delete cell.userNumber;
+        }
+        return cell
+      })
+      this.cells = this.chunk(array, 9)
     })
   },
   methods: {
@@ -151,18 +170,21 @@ export default {
       return array
     },
     showHint(array) {
-      let isReady = false
-  
-      while (!isReady) {
-        const randomCellRow = parseInt(Math.random() * 9)
-        const randomCellColumn = parseInt(Math.random() * 9)
+      const flatArray = array.flat()
+      const avalibleCells = flatArray.filter((cell) => (cell.hidden === true && typeof cell.userNumber === 'undefined'))
+      if (avalibleCells.length > 0) {
+        const randomNum = parseInt(Math.random() * (avalibleCells.length - 1))
+        const randomCellNum = avalibleCells[randomNum].id
 
-        if (array[randomCellRow][randomCellColumn].hidden) {
-          array[randomCellRow][randomCellColumn].hidden = false
-          isReady = true
-        }
+        array = flatArray.map((cell) => {
+          if (cell.id === randomCellNum && cell.hidden) {
+            cell.hidden = false
+          }
+          return cell
+        })
+
+        return this.chunk(array, 9)
       }
-
       return array
     },
     getRow(array, n) {
@@ -191,6 +213,13 @@ export default {
     },
     getChunk(array, n) {
       return this.chunk(array, n)
+    },
+    onlyNumber ($event) {
+      let keyCode = ($event.keyCode ? $event.keyCode : $event.which)
+      // only digits from 1 to 9 are allowed
+      if ((keyCode < 49 || keyCode > 57)) {
+        $event.preventDefault()
+      }
     },
   }
 }
