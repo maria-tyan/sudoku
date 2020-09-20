@@ -7,16 +7,16 @@
     <transition name="slide-down">
       <div v-if="active" class="settings__menu">
         <button
-          @click="hideCells()"
+          @click="newGame()"
           class="button"
         >
           Create a New Game
         </button>
         <button
-          @click="hideCells()"
+          @click="showHint()"
           class="button"
         >
-          Show a hint
+          Show a Hint
         </button>
         <select-component />
       </div>
@@ -35,12 +35,19 @@ export default {
   data() {
     return {
       active: false
-    };
+    }
   },
   methods: {
     toggleSettings() {
       this.active = !this.active
-    }
+    },
+    newGame() {
+      this.$root.$emit('new-game')
+    },
+    showHint() {
+      console.log('show-hint1')
+      this.$root.$emit('show-hint')
+    },
   }
 }
 </script>

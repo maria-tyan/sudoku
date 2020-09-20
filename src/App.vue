@@ -65,7 +65,14 @@ export default {
     },
   },
   mounted() {
-    this.cell = this.init()
+    this.cells = this.init()
+    this.$root.$on('new-game', () => {
+      this.cells = this.init()
+    })
+    this.$root.$on('show-hint', () => {
+      console.log('show-hint2')
+      this.cells = this.showHint(this.cells)
+    })
   },
   methods: {
     // generate the base array, mix it and hide cells
@@ -139,6 +146,21 @@ export default {
         const randomCellRow = parseInt(Math.random() * 9)
         const randomCellColumn = parseInt(Math.random() * 9) 
         array[randomCellRow][randomCellColumn].hidden = true
+      }
+
+      return array
+    },
+    showHint(array) {
+      let isReady = false
+  
+      while (!isReady) {
+        const randomCellRow = parseInt(Math.random() * 9)
+        const randomCellColumn = parseInt(Math.random() * 9)
+
+        if (array[randomCellRow][randomCellColumn].hidden) {
+          array[randomCellRow][randomCellColumn].hidden = false
+          isReady = true
+        }
       }
 
       return array

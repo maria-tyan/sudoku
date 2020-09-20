@@ -1,27 +1,27 @@
 <template>
   <div
-    id="select"
-    class="select"
+    id="select-component"
+    class="select-component"
     :class="[
-      'select_selected-' + selectedOption,
+      'select-component_selected-' + selectedOption,
     ]"
   >
     <div
       v-for="item in optionsList"
       :key="item.option"
-      class="select__option"
+      class="select-component__option"
     >
       <input
         :id="item.name"
         type="radio"
         name="option"
-        class="select__input"
+        class="select-component__input"
         :value="item.option"
         @change="selectOption(item.option)"
       >
       <label
         :for="item.name"
-        class="select__label"
+        class="select-component__label"
       >
         {{ item.label }}
       </label>
@@ -31,7 +31,7 @@
 
 <script>
 export default {
-  name: 'select',
+  name: 'selectComponent',
   data() {
     return {
       selectedOption: 0,
@@ -69,5 +69,5 @@ export default {
 
 <style lang="less">
   @import (reference) "../less/variables.less";
-  @import "../less/select.less";
+  @import "../less/select-component.less";
 </style>
