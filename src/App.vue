@@ -176,7 +176,8 @@ export default {
     },
     showHint(array) {
       const flatArray = array.flat()
-      const avalibleCells = flatArray.filter((cell) => (cell.hidden === true && typeof cell.userNumber === 'undefined'))
+      const avalibleCells = flatArray.filter((cell) => (cell.hidden === true 
+        && (typeof cell.userNumber === 'undefined' || cell.userNumber === '')))
       if (avalibleCells.length > 0) {
         const randomNum = parseInt(Math.random() * (avalibleCells.length - 1))
         const randomCellNum = avalibleCells[randomNum].id
