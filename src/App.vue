@@ -56,8 +56,13 @@ export default {
     checkResults() {
       const sum = (a, b) => a + b;
       for (let i = 0; i < 9; i++) {
+        const chunk = this.getChunk(this.cells, i)
+        let set = new Set(chunk)
+        if (set.size !== 9 || chunk.reduce(sum) !== 45) {
+          return false
+        }
         const row = this.getRow(this.cells, i)
-        let set = new Set(row)
+        set = new Set(row)
         if (set.size !== 9 || row.reduce(sum) !== 45) {
           return false
         }
@@ -212,7 +217,22 @@ export default {
       return column
     },
     getChunk(array, n) {
-      return this.chunk(array, n)
+      const chunk = []
+      const row = parseInt((n / 3), 10) * 3
+      const column = n % 3 * 3
+      for (let i = row; i < (row + 3); i++) {
+        for (let j = column; j < (column + 3); j++) {
+          if (array[i][j] ?? false) {
+            if (!array[i][j].hidden) {
+              chunk.push(array[i][j].number)
+            }
+            if (array[i][j].userNumber) {
+              chunk.push(parseInt(array[i][j].userNumber))
+            }
+          }
+        }
+      }
+      return chunk
     },
     onlyNumber ($event) {
       let keyCode = ($event.keyCode ? $event.keyCode : $event.which)
