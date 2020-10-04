@@ -3,35 +3,48 @@
     <header>
       <settings-component />
     </header>
-    <h1>Sudoku Game</h1>
-    <template v-if="checkResults">
-      <p>Congratulations, you've WON!</p>
-    </template>
-    <template v-else>
-      <p>Welcome to the game.</p>
-    </template>
+    
+    <section class="section">
+      <h1>Sudoku Game</h1>
+      <template v-if="checkResults">
+        <p>Congratulations, you've WON!</p>
+      </template>
+      <template v-else>
+        <p>Welcome to the game.</p>
+      </template>
 
-    <button
-      @click="init()"
-      class="button"
-    >
-      Create a New Game
-    </button>
-    <transition-group name="cell" tag="div" class="container">
-      <div v-for="(cell, index) in cells.flat()" :key="cell.id" class="cell">
-        <template v-if="cell.hidden">
-          <input
-            v-model.number="cells[parseInt((index / 9), 10)][index % 9].userNumber"
-            type="text"
-            class="cell-input"
-            @keypress="onlyNumber"
-          />
-        </template>
-        <template v-else>
-          {{ cell.number }}
-        </template>
+      <button
+        @click="init()"
+        class="button"
+      >
+        Create a New Game
+      </button>
+      <transition-group name="cell" tag="div" class="container">
+        <div v-for="(cell, index) in cells.flat()" :key="cell.id" class="cell">
+          <template v-if="cell.hidden">
+            <input
+              v-model.number="cells[parseInt((index / 9), 10)][index % 9].userNumber"
+              type="text"
+              class="cell-input"
+              @keypress="onlyNumber"
+            />
+          </template>
+          <template v-else>
+            {{ cell.number }}
+          </template>
+        </div>
+      </transition-group>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__copyright">
+        <p class="footer__copyright-item">
+          &copy;
+          {{ new Date().getFullYear() }}
+          Maria Efremova
+        </p>
       </div>
-    </transition-group>
+    </footer>
   </div>
 </template>
 
@@ -250,4 +263,5 @@ export default {
   @import "./less/global.less";
   @import "./less/cell.less";
   @import "./less/button.less";
+  @import "./less/footer.less";
 </style>
