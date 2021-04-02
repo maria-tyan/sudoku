@@ -51,7 +51,7 @@
 <script>
 import * as _ from 'lodash'
 import SettingsComponent from './components/Settings.vue'
-
+import {prideConfitti} from './utilities/confitti'
 export default {
   name: 'SudokuGame',
   components: {
@@ -89,6 +89,14 @@ export default {
       return true
     },
   },
+  watch:{
+    checkResults(val){
+      if(val === true){
+        prideConfitti()
+      }
+    }
+  }
+ ,
   mounted() {
     this.cells = this.init()
     this.$root.$on('new-game', () => {
