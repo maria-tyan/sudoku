@@ -1,5 +1,5 @@
 <template>
-  <div id="sudoku-app" class="main-wrapper">
+  <div id="sudoku-app" class="main-wrapper animate__animated animate__bounce">
     <header>
       <settings-component />
     </header>
