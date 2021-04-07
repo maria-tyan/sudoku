@@ -5,35 +5,47 @@
     </header>
     
     <section class="section">
-      <h1>Sudoku Game</h1>
-      <template v-if="checkResults">
-        <p>Congratulations, you've WON!</p>
-      </template>
-      <template v-else>
-        <p>Welcome to the game.</p>
-      </template>
+      <transition name="bounce" mode="out-in">
+        <div v-if="!checkResults" key="game">
+          <h1>Sudoku Game</h1>
+          <template v-if="!checkResults">
+            <p>Welcome to the game.</p>
+          </template>
 
-      <button
-        @click="init()"
-        class="button"
-      >
-        Create a New Game
-      </button>
-      <transition-group name="cell" tag="div" class="container">
-        <div v-for="(cell, index) in cells.flat()" :key="cell.id" class="cell">
-          <template v-if="cell.hidden">
-            <input
-              v-model.number="cells[parseInt((index / 9), 10)][index % 9].userNumber"
-              type="text"
-              class="cell-input"
-              @keypress="onlyNumber"
-            />
-          </template>
-          <template v-else>
-            {{ cell.number }}
-          </template>
+          <button
+            @click="init()"
+            class="button"
+          >
+            Create a New Game
+          </button>
+          <transition-group name="cell" tag="div" class="container">
+            <div v-for="(cell, index) in cells.flat()" :key="cell.id" class="cell">
+              <template v-if="cell.hidden">
+                <input
+                  v-model.number="cells[parseInt((index / 9), 10)][index % 9].userNumber"
+                  type="text"
+                  class="cell-input"
+                  @keypress="onlyNumber"
+                />
+              </template>
+              <template v-else>
+                {{ cell.number }}
+              </template>
+            </div>
+          </transition-group>
         </div>
-      </transition-group>
+        <div v-else class="winning-overlay" key="win">
+          <div>
+            <p>Congratulations, you WIN!</p>
+            <button
+              @click="init()"
+              class="button"
+            >
+              Start a New Game
+            </button>
+          </div>
+        </div>
+      </transition>
     </section>
 
     <footer class="footer">
@@ -263,5 +275,7 @@ export default {
   @import "./less/global.less";
   @import "./less/cell.less";
   @import "./less/button.less";
+  @import "./less/winning-overlay.less";
+  @import "./less/transitions.less";
   @import "./less/footer.less";
 </style>
