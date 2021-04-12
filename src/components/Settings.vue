@@ -1,27 +1,18 @@
 <template>
-  <div id="settings" class="settings">
+  <div id="settings" class="settings animate__animated animate__bounce">
     <div class="settings__button" @click="toggleSettings()">
       <font-awesome-icon icon="cog" />
     </div>
 
     <transition name="slide-down">
-      <div v-if="active" class="settings__menu">
-        <button
-          @click="newGame()"
-          class="button"
-        >
+      <div v-if="active" class="settings__menu animate__heartBeat">
+        <button @click="newGame()" class="button">
           Create a New Game
         </button>
-        <button
-          @click="showHint()"
-          class="button"
-        >
+        <button @click="showHint()" class="button">
           Show a Hint
         </button>
-        <button
-          @click="clearUserInput()"
-          class="button"
-        >
+        <button @click="clearUserInput()" class="button">
           Clear My Input
         </button>
         <select-component />
@@ -40,7 +31,7 @@ export default {
   },
   data() {
     return {
-      active: false
+      active: false,
     }
   },
   methods: {
@@ -56,12 +47,12 @@ export default {
     clearUserInput() {
       this.$root.$emit('clear-user-input')
     },
-  }
+  },
 }
 </script>
 
 <style lang="less">
-  @import (reference) "../less/variables.less";
-  @import "../less/settings.less";
-  @import "../less/transitions.less";  
+@import (reference) '../less/variables.less';
+@import '../less/settings.less';
+@import '../less/transitions.less';
 </style>

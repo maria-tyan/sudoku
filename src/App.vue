@@ -1,15 +1,45 @@
 <template>
-  <div id="sudoku-app" class="main-wrapper">
+  <div id="sudoku-app" class="main-wrapper animate__animated animate__bounce">
     <header>
       <settings-component />
     </header>
-    
+
     <section class="section">
+
+      <h1>Sudoku Game</h1>
+      <template v-if="checkResults">
+        <p style="font-weight:600;font-size:1rem;">
+         Player win!
+        </p>
+      </template>
+      <template v-else>
+        <p>Welcome to the game.</p>
+      </template>
+
+      <button @click="init()" class="button">
+        Create a New Game
+      </button>
+      <transition-group name="cell" tag="div" class="container">
+        <div v-for="(cell, index) in cells.flat()" :key="cell.id" class="cell">
+          <template v-if="cell.hidden">
+            <input
+              v-model.number="
+                cells[parseInt(index / 9, 10)][index % 9].userNumber
+              "
+              type="text"
+              class="cell-input"
+              @keypress="onlyNumber"
+            />
+          </template>
+          <template v-else>
+            {{ cell.number }}
+
       <transition name="bounce" mode="out-in">
         <div v-if="!checkResults" key="game">
           <h1>Sudoku Game</h1>
           <template v-if="!checkResults">
             <p>Welcome to the game.</p>
+
           </template>
 
           <button
@@ -63,7 +93,7 @@
 <script>
 import * as _ from 'lodash'
 import SettingsComponent from './components/Settings.vue'
-
+import { prideConfitti } from './utilities/confitti'
 export default {
   name: 'SudokuGame',
   components: {
@@ -73,13 +103,18 @@ export default {
     return {
       hints: parseInt(Math.random() * 5) + 35,
       cells: this.init(),
-      difficultyLvls: [[35, 40], [30, 35], [25, 30], [20, 25]],
+      difficultyLvls: [
+        [35, 40],
+        [30, 35],
+        [25, 30],
+        [20, 25],
+      ],
       difficulty: 0,
-    };
+    }
   },
   computed: {
     checkResults() {
-      const sum = (a, b) => a + b;
+      const sum = (a, b) => a + b
       for (let i = 0; i < 9; i++) {
         const chunk = this.getChunk(this.cells, i)
         let set = new Set(chunk)
@@ -101,6 +136,13 @@ export default {
       return true
     },
   },
+  watch: {
+    checkResults(val) {
+      if (val === true) {
+        prideConfitti()
+      }
+    },
+  },
   mounted() {
     this.cells = this.init()
     this.$root.$on('new-game', () => {
@@ -111,26 +153,31 @@ export default {
     })
     this.$root.$on('select-difficulty', (lvl) => {
       this.difficulty = lvl
-      this.hints = parseInt(Math.random() * 5) + 20 + ((4 - this.difficulty) * 5)
+      this.hints = parseInt(Math.random() * 5) + 20 + (4 - this.difficulty) * 5
     })
     this.$root.$on('clear-user-input', () => {
-      const array = this.cells = this.cells.flat().map((cell) => {
+      const array = (this.cells = this.cells.flat().map((cell) => {
         if (cell.userNumber) {
-          delete cell.userNumber;
+          delete cell.userNumber
         }
         return cell
-      })
+      }))
       this.cells = this.chunk(array, 9)
     })
   },
   methods: {
     // generate the base array, mix it and hide cells
     init() {
-      let array =  Array.apply(null, { length: 81 }).map((_, index) => ({
-          id: index,
-          hidden: false,
-          number: ((index % 9) + parseInt((index / 9), 10) * 3 + parseInt((index / 9 / 3), 10)) % 9 + 1,
-        }))
+      let array = Array.apply(null, { length: 81 }).map((_, index) => ({
+        id: index,
+        hidden: false,
+        number:
+          (((index % 9) +
+            parseInt(index / 9, 10) * 3 +
+            parseInt(index / 9 / 3, 10)) %
+            9) +
+          1,
+      }))
       this.cells = array = this.hideCells(this.chunk(array, 9))
       return array
     },
@@ -150,8 +197,8 @@ export default {
       while (firstRowNum === secondRowNum) {
         secondRowNum = parseInt(Math.random() * 3)
       }
-      const temp = array[areaNum * 3 + firstRowNum] 
-      array[areaNum * 3 + firstRowNum] = array[areaNum * 3 + secondRowNum] 
+      const temp = array[areaNum * 3 + firstRowNum]
+      array[areaNum * 3 + firstRowNum] = array[areaNum * 3 + secondRowNum]
       array[areaNum * 3 + secondRowNum] = temp
       return array
     },
@@ -167,8 +214,8 @@ export default {
         secondAreaNum = parseInt(Math.random() * 3)
       }
       for (let i = 0; i < 3; i++) {
-        const temp = array[firstAreaNum * 3 + i] 
-        array[firstAreaNum * 3 + i] = array[secondAreaNum * 3 + i] 
+        const temp = array[firstAreaNum * 3 + i]
+        array[firstAreaNum * 3 + i] = array[secondAreaNum * 3 + i]
         array[secondAreaNum * 3 + i] = temp
       }
       return array
@@ -180,20 +227,29 @@ export default {
     // create random sudoku field using diffrent methods
     mixArray(array, n) {
       // n it's number of shuffles in the array to get a random game
-      const arrayOfMethods = [this.transpose, this.swapRows, this.swapColumns, this.swapRowsArea, this.swapColumnsArea]
+      const arrayOfMethods = [
+        this.transpose,
+        this.swapRows,
+        this.swapColumns,
+        this.swapRowsArea,
+        this.swapColumnsArea,
+      ]
       const length = arrayOfMethods.length
       for (let i = 0; i < n; i++) {
         array = arrayOfMethods[parseInt(Math.random() * length)](array)
       }
-      
+
       return array
     },
     hideCells(array) {
       array = this.mixArray(array, 20)
       const numberOfHiddenCells = 81 - this.hints
-      while (array.flat().filter((cell) => cell.hidden === true).length < numberOfHiddenCells) {
+      while (
+        array.flat().filter((cell) => cell.hidden === true).length <
+        numberOfHiddenCells
+      ) {
         const randomCellRow = parseInt(Math.random() * 9)
-        const randomCellColumn = parseInt(Math.random() * 9) 
+        const randomCellColumn = parseInt(Math.random() * 9)
         array[randomCellRow][randomCellColumn].hidden = true
       }
 
@@ -201,8 +257,11 @@ export default {
     },
     showHint(array) {
       const flatArray = array.flat()
-      const avalibleCells = flatArray.filter((cell) => (cell.hidden === true 
-        && (typeof cell.userNumber === 'undefined' || cell.userNumber === '')))
+      const avalibleCells = flatArray.filter(
+        (cell) =>
+          cell.hidden === true &&
+          (typeof cell.userNumber === 'undefined' || cell.userNumber === '')
+      )
       if (avalibleCells.length > 0) {
         const randomNum = parseInt(Math.random() * (avalibleCells.length - 1))
         const randomCellNum = avalibleCells[randomNum].id
@@ -244,10 +303,10 @@ export default {
     },
     getChunk(array, n) {
       const chunk = []
-      const row = parseInt((n / 3), 10) * 3
-      const column = n % 3 * 3
-      for (let i = row; i < (row + 3); i++) {
-        for (let j = column; j < (column + 3); j++) {
+      const row = parseInt(n / 3, 10) * 3
+      const column = (n % 3) * 3
+      for (let i = row; i < row + 3; i++) {
+        for (let j = column; j < column + 3; j++) {
           if (array[i][j] ?? false) {
             if (!array[i][j].hidden) {
               chunk.push(array[i][j].number)
@@ -260,22 +319,28 @@ export default {
       }
       return chunk
     },
-    onlyNumber ($event) {
-      let keyCode = ($event.keyCode ? $event.keyCode : $event.which)
+    onlyNumber($event) {
+      let keyCode = $event.keyCode ? $event.keyCode : $event.which
       // only digits from 1 to 9 are allowed
-      if ((keyCode < 49 || keyCode > 57)) {
+      if (keyCode < 49 || keyCode > 57) {
         $event.preventDefault()
       }
     },
-  }
+  },
 }
 </script>
 
 <style lang="less">
+
+@import './less/global.less';
+@import './less/cell.less';
+@import './less/button.less';
+@import './less/footer.less';
   @import "./less/global.less";
   @import "./less/cell.less";
   @import "./less/button.less";
   @import "./less/winning-overlay.less";
   @import "./less/transitions.less";
   @import "./less/footer.less";
+
 </style>
